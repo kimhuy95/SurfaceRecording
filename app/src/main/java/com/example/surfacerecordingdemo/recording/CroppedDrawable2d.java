@@ -1,4 +1,6 @@
-package com.example.surfacerecordingdemo.gles;
+package com.example.surfacerecordingdemo.recording;
+
+import com.example.surfacerecordingdemo.recording.gles.Drawable2d;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -23,7 +25,7 @@ public class CroppedDrawable2d extends Drawable2d {
     /**
      * Trivial constructor.
      */
-    public CroppedDrawable2d(Prefab shape) {
+    public CroppedDrawable2d(Drawable2d.Prefab shape) {
         super(shape);
         mRecalculate = true;
     }
@@ -48,7 +50,7 @@ public class CroppedDrawable2d extends Drawable2d {
     }
 
     /**
-     * @param  crop defines the proportion to be cut on the top
+     * @param crop defines the proportion to be cut on the top
      */
     public void setTopCropped(float crop) {
 
@@ -68,7 +70,7 @@ public class CroppedDrawable2d extends Drawable2d {
     }
 
     /**
-     * @param  crop defines the proportion to be cut on the left
+     * @param crop defines the proportion to be cut on the left
      */
     public void setLeftCropped(float crop) {
         if (crop < 0.0f) {
@@ -83,7 +85,7 @@ public class CroppedDrawable2d extends Drawable2d {
     }
 
     /**
-     * @param  crop defines the proportion to be cut on the right
+     * @param crop defines the proportion to be cut on the right
      */
     public void setRightCropped(float crop) {
         if (crop < 0.0f) {

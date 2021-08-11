@@ -1,4 +1,20 @@
-package com.example.surfacerecordingdemo.gles;
+/*
+ * Copyright 2014 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.example.surfacerecordingdemo.recording.gles;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
@@ -19,46 +35,46 @@ public class Texture2dProgram {
     // Simple vertex shader, used for all programs.
     private static final String VERTEX_SHADER =
             "uniform mat4 uMVPMatrix;\n" +
-                    "uniform mat4 uTexMatrix;\n" +
-                    "attribute vec4 aPosition;\n" +
-                    "attribute vec4 aTextureCoord;\n" +
-                    "varying vec2 vTextureCoord;\n" +
-                    "void main() {\n" +
-                    "    gl_Position = uMVPMatrix * aPosition;\n" +
-                    "    vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n" +
-                    "}\n";
+            "uniform mat4 uTexMatrix;\n" +
+            "attribute vec4 aPosition;\n" +
+            "attribute vec4 aTextureCoord;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            "void main() {\n" +
+            "    gl_Position = uMVPMatrix * aPosition;\n" +
+            "    vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n" +
+            "}\n";
 
     // Simple fragment shader for use with "normal" 2D textures.
     private static final String FRAGMENT_SHADER_2D =
             "precision mediump float;\n" +
-                    "varying vec2 vTextureCoord;\n" +
-                    "uniform sampler2D sTexture;\n" +
-                    "void main() {\n" +
-                    "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
-                    "}\n";
+            "varying vec2 vTextureCoord;\n" +
+            "uniform sampler2D sTexture;\n" +
+            "void main() {\n" +
+            "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
+            "}\n";
 
     // Simple fragment shader for use with external 2D textures (e.g. what we get from
     // SurfaceTexture).
     private static final String FRAGMENT_SHADER_EXT =
             "#extension GL_OES_EGL_image_external : require\n" +
-                    "precision mediump float;\n" +
-                    "varying vec2 vTextureCoord;\n" +
-                    "uniform samplerExternalOES sTexture;\n" +
-                    "void main() {\n" +
-                    "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
-                    "}\n";
+            "precision mediump float;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            "uniform samplerExternalOES sTexture;\n" +
+            "void main() {\n" +
+            "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
+            "}\n";
 
     // Fragment shader that converts color to black & white with a simple transformation.
     private static final String FRAGMENT_SHADER_EXT_BW =
             "#extension GL_OES_EGL_image_external : require\n" +
-                    "precision mediump float;\n" +
-                    "varying vec2 vTextureCoord;\n" +
-                    "uniform samplerExternalOES sTexture;\n" +
-                    "void main() {\n" +
-                    "    vec4 tc = texture2D(sTexture, vTextureCoord);\n" +
-                    "    float color = tc.r * 0.3 + tc.g * 0.59 + tc.b * 0.11;\n" +
-                    "    gl_FragColor = vec4(color, color, color, 1.0);\n" +
-                    "}\n";
+            "precision mediump float;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            "uniform samplerExternalOES sTexture;\n" +
+            "void main() {\n" +
+            "    vec4 tc = texture2D(sTexture, vTextureCoord);\n" +
+            "    float color = tc.r * 0.3 + tc.g * 0.59 + tc.b * 0.11;\n" +
+            "    gl_FragColor = vec4(color, color, color, 1.0);\n" +
+            "}\n";
 
     // Fragment shader with a convolution filter.  The upper-left half will be drawn normally,
     // the lower-right half will have the filter applied, and a thin red line will be drawn
@@ -73,29 +89,29 @@ public class Texture2dProgram {
     public static final int KERNEL_SIZE = 9;
     private static final String FRAGMENT_SHADER_EXT_FILT =
             "#extension GL_OES_EGL_image_external : require\n" +
-                    "#define KERNEL_SIZE " + KERNEL_SIZE + "\n" +
-                    "precision highp float;\n" +
-                    "varying vec2 vTextureCoord;\n" +
-                    "uniform samplerExternalOES sTexture;\n" +
-                    "uniform float uKernel[KERNEL_SIZE];\n" +
-                    "uniform vec2 uTexOffset[KERNEL_SIZE];\n" +
-                    "uniform float uColorAdjust;\n" +
-                    "void main() {\n" +
-                    "    int i = 0;\n" +
-                    "    vec4 sum = vec4(0.0);\n" +
-                    "    if (vTextureCoord.x < vTextureCoord.y - 0.005) {\n" +
-                    "        for (i = 0; i < KERNEL_SIZE; i++) {\n" +
-                    "            vec4 texc = texture2D(sTexture, vTextureCoord + uTexOffset[i]);\n" +
-                    "            sum += texc * uKernel[i];\n" +
-                    "        }\n" +
-                    "    sum += uColorAdjust;\n" +
-                    "    } else if (vTextureCoord.x > vTextureCoord.y + 0.005) {\n" +
-                    "        sum = texture2D(sTexture, vTextureCoord);\n" +
-                    "    } else {\n" +
-                    "        sum.r = 1.0;\n" +
-                    "    }\n" +
-                    "    gl_FragColor = sum;\n" +
-                    "}\n";
+            "#define KERNEL_SIZE " + KERNEL_SIZE + "\n" +
+            "precision highp float;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            "uniform samplerExternalOES sTexture;\n" +
+            "uniform float uKernel[KERNEL_SIZE];\n" +
+            "uniform vec2 uTexOffset[KERNEL_SIZE];\n" +
+            "uniform float uColorAdjust;\n" +
+            "void main() {\n" +
+            "    int i = 0;\n" +
+            "    vec4 sum = vec4(0.0);\n" +
+            "    if (vTextureCoord.x < vTextureCoord.y - 0.005) {\n" +
+            "        for (i = 0; i < KERNEL_SIZE; i++) {\n" +
+            "            vec4 texc = texture2D(sTexture, vTextureCoord + uTexOffset[i]);\n" +
+            "            sum += texc * uKernel[i];\n" +
+            "        }\n" +
+            "    sum += uColorAdjust;\n" +
+            "    } else if (vTextureCoord.x > vTextureCoord.y + 0.005) {\n" +
+            "        sum = texture2D(sTexture, vTextureCoord);\n" +
+            "    } else {\n" +
+            "        sum.r = 1.0;\n" +
+            "    }\n" +
+            "    gl_FragColor = sum;\n" +
+            "}\n";
 
     private ProgramType mProgramType;
 
@@ -210,7 +226,7 @@ public class Texture2dProgram {
         GlUtil.checkGlError("glBindTexture " + texId);
 
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-                GLES20.GL_NEAREST);
+                GLES20.GL_LINEAR);
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
                 GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
@@ -246,9 +262,9 @@ public class Texture2dProgram {
 
         // Don't need to create a new array here, but it's syntactically convenient.
         mTexOffset = new float[] {
-                -rw, -rh,   0f, -rh,    rw, -rh,
-                -rw, 0f,    0f, 0f,     rw, 0f,
-                -rw, rh,    0f, rh,     rw, rh
+            -rw, -rh,   0f, -rh,    rw, -rh,
+            -rw, 0f,    0f, 0f,     rw, 0f,
+            -rw, rh,    0f, rh,     rw, rh
         };
         //Log.d(TAG, "filt size: " + width + "x" + height + ": " + Arrays.toString(mTexOffset));
     }
@@ -271,11 +287,16 @@ public class Texture2dProgram {
     public void draw(float[] mvpMatrix, FloatBuffer vertexBuffer, int firstVertex,
                      int vertexCount, int coordsPerVertex, int vertexStride,
                      float[] texMatrix, FloatBuffer texBuffer, int textureId, int texStride) {
+//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
         GlUtil.checkGlError("draw start");
 
         // Select the program.
         GLES20.glUseProgram(mProgramHandle);
         GlUtil.checkGlError("glUseProgram");
+
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         // Set the texture.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -295,7 +316,7 @@ public class Texture2dProgram {
 
         // Connect vertexBuffer to "aPosition".
         GLES20.glVertexAttribPointer(maPositionLoc, coordsPerVertex,
-                GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
+            GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
         GlUtil.checkGlError("glVertexAttribPointer");
 
         // Enable the "aTextureCoord" vertex attribute.
@@ -305,7 +326,7 @@ public class Texture2dProgram {
         // Connect texBuffer to "aTextureCoord".
         GLES20.glVertexAttribPointer(maTextureCoordLoc, 2,
                 GLES20.GL_FLOAT, false, texStride, texBuffer);
-        GlUtil.checkGlError("glVertexAttribPointer");
+            GlUtil.checkGlError("glVertexAttribPointer");
 
         // Populate the convolution kernel, if present.
         if (muKernelLoc >= 0) {

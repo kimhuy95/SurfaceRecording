@@ -20,16 +20,16 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.surfacerecordingdemo.recording.PartialScreenRecorder
+import com.screencastomatic.app.recording.recorder.ScreenRecorder
 import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var surfaceView: SurfaceView
     private lateinit var projection: MediaProjection
-    private lateinit var virtualDisplay: VirtualDisplay
+    private lateinit var screenRecorder: PartialScreenRecorder
 
     private val mediaProjectionManager by lazy { getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager }
-    private val overlayManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
     private val permissions =
         listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
@@ -73,63 +73,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startRecording() {
-        addSurfaceView()
-    }
-
-    private fun addSurfaceView() {
-        surfaceView = SurfaceView(this)
-        surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-                val a = 12
-
+        screenRecorder = PartialScreenRecorder(this, projection)
+        screenRecorder.start(object : ScreenRecorder.Callback {
+            override fun onRecordFailed(e: Throwable?, duration: Long) {
             }
 
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                val a = 12
-                createVirtualDisplay()
+            override fun onRecordStarted() {
             }
 
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
-                val a = 12
+            override fun onRecordSuccess(files: List<File>) {
+            }
+
+            override fun onRecordingInfo(amplitude: Int) {
             }
         })
-
-        val params = WindowManager.LayoutParams(
-            256,
-            256,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT
-        )
-        params.gravity = Gravity.TOP or Gravity.START
-        params.x = 0
-        params.y = 100
-        overlayManager.addView(surfaceView, params)
     }
 
     private fun stopRecording() {
-        virtualDisplay.release()
-        projection.stop()
-        overlayManager.removeViewImmediate(surfaceView)
-    }
-
-    private fun createVirtualDisplay() {
-        val displayMetrics = resources.displayMetrics
-        virtualDisplay = projection.createVirtualDisplay(
-            getString(R.string.app_name),
-            displayMetrics.widthPixels,
-            displayMetrics.heightPixels,
-            displayMetrics.densityDpi,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            surfaceView.holder.surface,
-            null,
-            null
-        )
+        screenRecorder.pause {  }
     }
 
     private fun requestProjection() {
@@ -147,13 +108,5 @@ class MainActivity : AppCompatActivity() {
                 it
             ) == PackageManager.PERMISSION_GRANTED
         }
-    }
-
-    private fun createOutputFile(): File {
-        val dir = File(Environment.getExternalStorageDirectory(), "SurfaceRecordingDemo")
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-        return File(dir, "output_${System.currentTimeMillis()}.mp4")
     }
 }
