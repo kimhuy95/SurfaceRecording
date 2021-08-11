@@ -267,16 +267,16 @@ public class RecordableSurfaceView extends SurfaceView {
 
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mediaRecorder.setInputSurface(mSurface);
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+//        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mediaRecorder.setAudioSamplingRate(44100);
-        mediaRecorder.setAudioEncodingBitRate(96000);
+//
+//        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+//        mediaRecorder.setAudioSamplingRate(44100);
+//        mediaRecorder.setAudioEncodingBitRate(96000);
 
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
 
-        mediaRecorder.setVideoEncodingBitRate(12000000);
+        mediaRecorder.setVideoEncodingBitRate(1000 * 1000 * 4);
         mediaRecorder.setVideoFrameRate(30);
 
         if(desiredWidth > desiredHeight){
@@ -355,6 +355,7 @@ public class RecordableSurfaceView extends SurfaceView {
             boolean success = true;
             try {
                 mMediaRecorder.stop();
+                mMediaRecorder.reset();
                 mIsRecording.set(false);
             } catch (RuntimeException e) {
                 success = false;
