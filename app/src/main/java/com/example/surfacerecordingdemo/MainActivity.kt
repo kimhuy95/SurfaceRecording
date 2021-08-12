@@ -4,19 +4,12 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.PixelFormat
-import android.hardware.display.DisplayManager
-import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
-import android.os.Environment
 import android.provider.Settings
-import android.view.Gravity
-import android.view.SurfaceHolder
-import android.view.SurfaceView
-import android.view.WindowManager
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -90,7 +83,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopRecording() {
-        screenRecorder.pause {  }
+        screenRecorder.pause { }
+        Toast.makeText(this, "Output video in SurfaceRecordingDemo folder", Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun requestProjection() {
