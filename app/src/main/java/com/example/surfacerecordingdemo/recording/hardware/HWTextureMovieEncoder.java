@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.surfacerecordingdemo.recording.AudioEncoderConfig;
+import com.example.surfacerecordingdemo.recording.Benchmark;
 import com.example.surfacerecordingdemo.recording.EncoderCallback;
 import com.example.surfacerecordingdemo.recording.EncoderConfig;
 import com.example.surfacerecordingdemo.recording.MainFrameRect;
@@ -117,10 +118,12 @@ public class HWTextureMovieEncoder implements TextureMovieEncoder, Runnable, Sur
     private AudioEncoderConfig audioEncoderConfig;
     private Timer throttlingTimer;
     private Boolean isShownDangerToast = false;
+    private Benchmark benchmark;
 
     public HWTextureMovieEncoder(Context context, @Nullable AudioEncoderConfig audioEncoderConfig) {
         this.context = context;
         this.audioEncoderConfig = audioEncoderConfig;
+        benchmark = Benchmark.create(context);
     }
 
     /**
@@ -175,6 +178,7 @@ public class HWTextureMovieEncoder implements TextureMovieEncoder, Runnable, Sur
         }
         // We don't know when these will actually finish (or even start).  We don't want to
         // delay the UI thread though, so we return immediately.
+        benchmark.stop();
     }
 
     /**
@@ -323,6 +327,8 @@ public class HWTextureMovieEncoder implements TextureMovieEncoder, Runnable, Sur
 
             GLES20.glFlush();
             GLES20.glFinish();
+
+            benchmark.tick();
         }
     }
 
@@ -434,6 +440,7 @@ public class HWTextureMovieEncoder implements TextureMovieEncoder, Runnable, Sur
                     mCallback.onStartRecord();
                 }
                 mSurfaceTexture.updateTexImage();
+                benchmark.start();
             }, config.mDelayMs);
 
             mVideoEncoder.cb = new HWVideoEncoderCore.Callback() {
